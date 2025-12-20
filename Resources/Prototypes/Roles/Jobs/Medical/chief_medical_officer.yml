@@ -185,6 +185,9 @@
     components:
     - type: SurgerySpeedModifier
       speedModifier: 2
+  - !type:AddComponentSpecial
+    components:
+    - type: CPRTraining
 
 - type: startingGear
   id: CMOGear

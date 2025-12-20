@@ -23,6 +23,14 @@ public partial class SharedStaminaSystem
             return;
 
         stamina.CritThreshold *= comp.Modifier;
+
+        // If this modifier prevents stamcrit on removal, ensure we don't instantly enter
+        // stamcrit when the modifier is added by clamping current damage below the new threshold.
+        if (comp.PreventStamCritOnRemove && stamina.StaminaDamage >= stamina.CritThreshold)
+        {
+            stamina.StaminaDamage = MathF.Max(0f, stamina.CritThreshold - 0.01f);
+            Dirty(uid, stamina);
+        }
     }
 
     private void OnModifierShutdown(EntityUid uid, StaminaModifierComponent comp, ComponentShutdown args)
@@ -31,6 +39,15 @@ public partial class SharedStaminaSystem
             return;
 
         stamina.CritThreshold /= comp.Modifier;
+
+        // If this modifier is meant to prevent acute withdrawal, ensure the current
+        // stamina damage does not instantaneously exceed the new threshold.
+        if (comp.PreventStamCritOnRemove && stamina.StaminaDamage >= stamina.CritThreshold)
+        {
+            // Clamp just below the threshold so it doesn't immediately enter stamcrit.
+            stamina.StaminaDamage = MathF.Max(0f, stamina.CritThreshold - 0.01f);
+            Dirty(uid, stamina);
+        }
     }
 
     /// <summary>
@@ -54,6 +71,14 @@ public partial class SharedStaminaSystem
         {
             // scale to the new threshold, act as if it was removed then added
             stamina.CritThreshold *= modifier / old;
+
+            // If this modifier requests to prevent stamcrit on removal, clamp current
+            // damage if the newly scaled threshold would be breached.
+            if (comp.PreventStamCritOnRemove && stamina.StaminaDamage >= stamina.CritThreshold)
+            {
+                stamina.StaminaDamage = MathF.Max(0f, stamina.CritThreshold - 0.01f);
+                Dirty(uid, stamina);
+            }
         }
     }
 }

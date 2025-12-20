@@ -236,6 +236,8 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
     /// </summary>
     public const float GracePeriod = 0.05f;
 
+    private static readonly ProtoId<TagPrototype> WideSwingIgnoreTag = "WideSwingIgnore"; // Goobstation
+
     public override void Initialize()
     {
         base.Initialize();
@@ -1002,7 +1004,7 @@ public abstract class SharedMeleeWeaponSystem : EntitySystem
                 range,
                 ignore,
                 false)
-                .Where(x => !_tag.HasTag(x.HitEntity, "WideSwingIgnore")) // Goobstation
+                .Where(x => !_tag.HasTag(x.HitEntity, WideSwingIgnoreTag)) // Goobstation
                 .ToList();
 
             if (res.Count != 0)

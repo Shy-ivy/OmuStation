@@ -23,4 +23,13 @@ public sealed partial class StaminaModifierComponent : Component
     /// </summary>
     [ViewVariables(VVAccess.ReadWrite), DataField("modifier"), AutoNetworkedField]
     public float Modifier = 2f;
+
+    /// <summary>
+    /// When true, prevents the "withdrawal" behaviour when this modifier is removed.
+    /// If removing the modifier would leave the entity over their new crit threshold,
+    /// the current stamina damage will be clamped below the threshold instead of
+    /// immediately entering stamcritical state.
+    /// </summary>
+    [ViewVariables(VVAccess.ReadWrite), DataField("preventStamCritOnRemove"), AutoNetworkedField]
+    public bool PreventStamCritOnRemove = false;
 }

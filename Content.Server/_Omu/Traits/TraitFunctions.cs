@@ -16,7 +16,7 @@ namespace Content.Server._Omu.Traits;
 ///     Used for traits that remove a component upon a player spawning in.
 /// </summary>
 /// <remarks>
-///     taken from EE. 
+///     taken from EE.
 /// </remarks>
 public sealed partial class TraitRemoveComponent : TraitFunction
 {
@@ -34,7 +34,7 @@ public sealed partial class TraitRemoveComponent : TraitFunction
 }
 
 /// <remarks>
-///     taken from EE. 
+///     taken from EE.
 /// </remarks>
 public sealed partial class TraitModifyDensity : TraitFunction
 {
@@ -65,7 +65,7 @@ public sealed partial class TraitModifyDensity : TraitFunction
 ///     Used for traits that modify unarmed damage on MeleeWeaponComponent.
 /// </summary>
 /// <remarks>
-///     taken from EE. 
+///     taken from EE.
 /// </remarks>
 public sealed partial class TraitModifyUnarmed : TraitFunction
 {
@@ -145,7 +145,42 @@ public sealed partial class TraitModifyUnarmed : TraitFunction
 }
 
 /// <summary>
-///     Gives the specified equipment to the player on spawn if they have the specified jobs. 
+///     Modifies fields on <see cref="FlightComponent"/> when the player spawns.
+/// </summary>
+public sealed partial class TraitModifyFlight : TraitFunction
+{
+    [DataField, AlwaysPushInheritance]
+    public float? StaminaDrainRate;
+
+    [DataField, AlwaysPushInheritance]
+    public float? StaminaRegenMultiplier;
+
+    [DataField, AlwaysPushInheritance]
+    public float? SpeedModifier;
+
+    public override void OnPlayerSpawn(EntityUid uid,
+        IComponentFactory factory,
+        IEntityManager entityManager,
+        ISerializationManager serializationManager)
+    {
+        if (!entityManager.TryGetComponent<Content.Shared._EinsteinEngines.Flight.FlightComponent>(uid, out var flight))
+            return;
+
+        if (StaminaDrainRate != null)
+            flight.StaminaDrainRate = StaminaDrainRate.Value;
+
+        if (StaminaRegenMultiplier != null)
+            flight.StaminaRegenMultiplier = StaminaRegenMultiplier.Value;
+
+        if (SpeedModifier != null)
+            flight.SpeedModifier = SpeedModifier.Value;
+
+        entityManager.Dirty(uid, flight);
+    }
+}
+
+/// <summary>
+///     Gives the specified equipment to the player on spawn if they have the specified jobs.
 /// </summary>
 /// <remarks>
 ///     Made for Cybernetic Beasts, in order to give work mantles to players with jobs that may require them round-start.

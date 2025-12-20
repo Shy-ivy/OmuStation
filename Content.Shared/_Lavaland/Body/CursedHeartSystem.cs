@@ -49,6 +49,8 @@ public sealed class CursedHeartSystem : EntitySystem
     [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly IPrototypeManager _proto = default!;
 
+    private const string PumpCursedHeartAction = "ActionPumpCursedHeart";
+
     public override void Initialize()
     {
         base.Initialize();
@@ -88,7 +90,7 @@ public sealed class CursedHeartSystem : EntitySystem
 
     private void OnMapInit(EntityUid uid, CursedHeartComponent comp, MapInitEvent args)
     {
-        _actions.AddAction(uid, ref comp.PumpActionEntity, "ActionPumpCursedHeart");
+        _actions.AddAction(uid, ref comp.PumpActionEntity, PumpCursedHeartAction);
     }
 
     private void OnShutdown(EntityUid uid, CursedHeartComponent comp, ComponentShutdown args)

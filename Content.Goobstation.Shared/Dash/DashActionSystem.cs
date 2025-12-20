@@ -14,6 +14,7 @@ using Content.Shared.Damage.Systems;
 using Content.Shared.Gravity;
 using Content.Shared.Movement.Components;
 using Content.Shared.Throwing;
+using Content.Shared._EinsteinEngines.Flight;
 
 namespace Content.Goobstation.Shared.Dash;
 
@@ -24,6 +25,8 @@ public sealed class DashActionSystem : EntitySystem
     [Dependency] private readonly ThrowingSystem _throwing = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly SharedStaminaSystem _stamina = default!;
+    [Dependency] private readonly SharedFlightSystem _flight = default!;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -53,6 +56,8 @@ public sealed class DashActionSystem : EntitySystem
             speed *= speedcomp.CurrentSprintSpeed / speedcomp.BaseSprintSpeed;
         }
 
+        // Dash now removes Flight on component initialization; no temporary toggles are required here.
+
         _throwing.TryThrow(args.Performer, vec, speed, animated: false);
 
         if (args.StaminaDrain != null)
@@ -68,6 +73,10 @@ public sealed class DashActionSystem : EntitySystem
     private void OnComponentInit(EntityUid uid, DashActionComponent comp, ref ComponentInit args)
     {
         comp.ActionUid = _actions.AddAction(uid, comp.ActionProto);
+
+        // If an entity has dash ability, remove their Flight component so they cannot fly while they have dash.
+        // Removal is deferred to let component shutdown handlers run normally (removing stamina drains, actions, etc.).
+        EntityManager.RemoveComponentDeferred<FlightComponent>(uid);
     }
 
     private void OnComponentShutdown(EntityUid uid, DashActionComponent comp, ref ComponentShutdown args)

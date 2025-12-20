@@ -229,6 +229,7 @@ namespace Content.Shared.Interaction
         public const string RateLimitKey = "Interaction";
 
         private static readonly ProtoId<TagPrototype> BypassInteractionRangeChecksTag = "BypassInteractionRangeChecks";
+        private static readonly ProtoId<TagPrototype> CantInteractTag = "CantInteract";
 
         public delegate bool Ignored(EntityUid entity);
 
@@ -277,6 +278,7 @@ namespace Content.Shared.Interaction
             );
 
             InitializeBlocking();
+
         }
 
         private void RateLimitAlertAdmins(ICommonSession session)
@@ -302,7 +304,7 @@ namespace Content.Shared.Interaction
                 if (ev.Message is not OpenBoundInterfaceMessage
                     || !HasComp<GhostComponent>(ev.Actor)
                     || aUiComp?.BlockSpectators == true
-                    || _tagSystem.HasTag(ev.Actor, "CantInteract")) // Shitmed change
+                    || _tagSystem.HasTag(ev.Actor, CantInteractTag)) // Shitmed change
                 {
                     ev.Cancel();
                     return;
